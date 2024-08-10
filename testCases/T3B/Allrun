@@ -5,13 +5,17 @@
 
 # Function to modify mesh size
 modifyMeshSize() {
-  # Prompt user for mesh size
-  read -p "What mesh size do you want? (fine, intermediate, coarse): " meshSize
+  if [ -z $1 ]; then
+    # Prompt user for mesh size
+    read -p "What mesh size do you want? (fine, medium, coarse): " meshSize
+  else
+    meshSize=$1
+  fi
 
   # Check user input
-  if [ "$meshSize" != "fine" ] && [ "$meshSize" != "intermediate" ] && [ "$meshSize" != "coarse" ]; then
+  if [ "$meshSize" != "fine" ] && [ "$meshSize" != "medium" ] && [ "$meshSize" != "coarse" ]; then
     echo "Invalid mesh size. Please choose from fine, intermediate, or coarse."
-    return 1
+    exit 1
   fi
 
   # Modify system/blockMeshDict file
@@ -23,7 +27,7 @@ modifyMeshSize() {
       newMeshValues1="100 424 1"  
       newMeshValues2="600 424 1"  
       ;;
-    intermediate)
+    medium)
       newMeshValues1="75 300 1"  
       newMeshValues2="450 300 1"   
       ;;
@@ -47,14 +51,21 @@ modifyMeshSize() {
 rm -f log*.*
 
 # Ask user to choose mesh size
-modifyMeshSize
+modifyMeshSize $1
 
 # Prepare mesh
 foamCleanPolyMesh
 runApplication blockMesh
 
+# Decompose mesh
+runApplication decomposePar
+
 # Run solver 
-runApplication simpleFoam
+runParallel simpleFoam
+
+# Reconstruct solution & clean
+runApplication reconstructPar
+rm -rf processor*
 
 # Generate plots with gnuplot
 runApplication gnuplot cf.gpl

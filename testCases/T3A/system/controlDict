@@ -16,7 +16,7 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 libs (
-  "libmyIncompressibleGammaSSTModel.so"
+  "libIncompressibleGammaSSTModel.so"
   );
 
 application     simpleFoam;
@@ -39,9 +39,9 @@ purgeWrite      0;
 
 writeFormat     ascii;
 
-writePrecision  6;
+writePrecision  12;
 
-writeCompression compressed;
+writeCompression on;
 
 timeFormat      general;
 
@@ -51,8 +51,9 @@ runTimeModifiable yes;
 
 functions
 {
-  #includeFunc "wallShearStress"
-  #includeFunc "axiswall"
+  #includeFunc wallShearStress
+  
+  #include "surfaces"
 }
 
 // ************************************************************************* //

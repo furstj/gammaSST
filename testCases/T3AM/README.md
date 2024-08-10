@@ -12,11 +12,20 @@ The turbulence model used in this simulation is **gammaSST**.
 - Before running the simulation, it is necessary to clean the directory by executing the following command: **./Allclean**
 
 ## Run the simulation:
-- To run the simulation, execute the following command: **./Allrun**
+- To run the simulation, execute the following command: **./Allrun** or **./Allrun <meshSize>**
+- The case is set up with three different mesh sizes:
+  - **coarse** with 371 x 212 cells, average y+ ~ 0.94
+  - **medium** with 525 x 300 cells
+  - **fine** with 1600 x 424 cells
 
 # Analyze results:
-Once the simulation is complete, you can analyze the results by plotting the friction coefficient (Cf) versus the Reynolds number (Rex). 
-This can be done using data visualization tools such as ParaFoam or Tecplot.
+Once the simulation is complete, you can analyze the results by plotting the friction coefficient (Cf) versus the Reynolds number (Rex).
+This can be done using data visualization tools such as gnuplot, ParaFoam or Tecplot.
+
+# Expected results
+
+## Coarse mesh
+![cf_coarse](./figures/cf_coarse.png)
 
 **Notes:**
 

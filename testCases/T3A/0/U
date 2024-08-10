@@ -16,44 +16,49 @@ FoamFile
     instance        "";
     local           "";
 
-    class           volScalarField;
-    object          p;
+    class           volVectorField;
+    object          U;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
-dimensions      [0 2 -2 0 0 0 0];
+dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform 0;
+internalField   uniform (5.4 0 0);
 
 boundaryField
 {
-    lowerWall      
+    wall
     {
-        type            zeroGradient;
+        type            fixedValue;
+	value     uniform (0 0 0);
     }
-
+    firstBottomFace
+    {
+        type            slip;
+    }
+    firstTopFace
+    {
+        type            slip;
+    }
+    secondTopFace
+    {
+        type            slip;
+    }
+    inlet
+    {
+        type            fixedValue;
+        value           uniform (5.4 0 0);
+    }
     outlet
     {
-	type            fixedValue;
-        value           uniform 0;
-    }
-
-    inlet
-    { 
-        type    zeroGradient;
-    }
-
-    lowerSymmetry      
-    {
         type            zeroGradient;
     }
-
-    upperSymmetry      
+    frontAndBack
     {
-        type            zeroGradient;
-    }
+        type            empty;
+    }	
 }
 
 

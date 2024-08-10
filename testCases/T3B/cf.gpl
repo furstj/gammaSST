@@ -10,5 +10,5 @@ set logscale y
 
 set grid
 
-plot "../ercoftac_t3b_cf.dat" ti "Experiment", \
+plot "ercoftac_t3b_cf.dat" ti "Experiment", \
      "postProcessing/axiswall/5000/line_wallShearStress.xy" us (9.4*$1/1.5e-5):(-2*$2/9.4**2) with linespoint ti "Result"

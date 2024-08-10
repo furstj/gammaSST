@@ -11,42 +11,42 @@ FoamFile
     format      ascii;
     class       volScalarField;
     location    "0";
-    object      kt;
+    object      gamma;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 2 -2 0 0 0 0];
+dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 0.1;
+internalField   uniform 1;
 
 boundaryField
 {
-    lowerWall
+    wall
     {
-      type            fixedValue;
-      value           uniform 0;
+      type            zeroGradient;
     }
-    lowerSymmetry
+    firstBottomFace
     {
         type            zeroGradient;
     }
-    upperSymmetry
+    firstTopFace
+    {
+        type            zeroGradient;
+    }
+    secondTopFace
     {
         type            zeroGradient;
     }
     inlet
     {
-        type            turbulentIntensityKineticEnergyInlet;
-        intensity       0.033;
-        U               U;
-        phi             phi;
-        value           uniform 0.1;
+        type            fixedValue;
+        value           uniform 1;
     }
     outlet
     {
         type            zeroGradient;
     }
-    defaultFaces
+    frontAndBack
     {
         type            empty;
     }
