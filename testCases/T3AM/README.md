@@ -11,6 +11,12 @@ The boundary conditions were set up according to Menters, Smirnov et al.
 - Turbulence intesity at the inlet (i.e. $0.04 m$ before the plate) $I = 0.9\%$
 - Turbulent/laminar viscosity ratio at the inlet $\nu_t/\nu = 8$.
 
+## Expected results
+
+![Friction coefficient at the wall](./validation/figures/Rex_vs_cf.png)
+
+![Turbulence intensity along the plate](./validation/figures/x_vs_u.png)
+
 ## References:
 - [ERCOFTAC T3A 3% test-case](http://cfd.mace.manchester.ac.uk/ercoftac/doku.php?id=cases:case020)
 - SAVILL, A. M. Some recent progress in the turbulence modelling of by-pass transition. *Near-wall turbulent flows*, 1993, 829-848.
