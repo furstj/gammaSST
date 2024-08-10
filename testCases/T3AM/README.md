@@ -8,7 +8,7 @@ The flat plate $3 m$ long starts at $x=0.04 m$. The leading edge is circular arc
 The boundary conditions were set up according to Menters, Smirnov et al.
 
 - Inlet velocity $U = 19.8$ $ms^{-1}$
-- Turbulence intesity at the inlet (i.e. $0.04 m$ before the plate) $I = 0.9%$
+- Turbulence intensity at the inlet (i.e. $0.04 m$ before the plate) $I = 0.9\\%$
 - Turbulent/laminar viscosity ratio at the inlet $\nu_t/\nu = 8$.
 
 ## Expected results
