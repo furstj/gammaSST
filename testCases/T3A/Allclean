@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/CleanFunctions      # Tutorial clean functions
+#------------------------------------------------------------------------------
 
-# Source tutorial run functions
-. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+cleanCase0
 
-cleanCase
+rm -f validation/*.png
 
-rm -f *.png
+#------------------------------------------------------------------------------

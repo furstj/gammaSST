@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.1.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -18,63 +18,45 @@ solvers
 {
     p
     {
-        solver           GAMG;
-        tolerance        1e-8;
-        relTol           0.001;
-        minIter          5;
-        maxIter          100;
-        smoother         GaussSeidel;
-        nPreSweeps       1;
-        nPostSweeps      3;
-        nFinestSweeps    3;
-        scaleCorrection true; 
-        directSolveCoarsest false;
-        cacheAgglomeration on;
-        nCellsInCoarsestLevel 50;
-        agglomerator     faceAreaPair;
-        mergeLevels      1;
+        solver          GAMG;
+        tolerance       1e-6;
+        relTol          0.1;
+        smoother        GaussSeidel;
     }
 
-    "(U|k|omega|gamma)"
+    "(U|k|omega|gammaInt|ReThetat)"
     {
-      solver           PBiCG;
-      preconditioner   DILU;
-      tolerance        1e-8;
-      relTol           0.001;
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-8;
+        relTol          0.1;
+        maxIter         10;
     }
 }
 
 SIMPLE
 {
-    nNonOrthogonalCorrectors 1;
-    
-    pRefCell        0;
-    pRefValue       0;
+    consistent      yes;
 
-    //residualControl
-    //{
-    //    p               1e-5;
-    //    U               1e-5;
-    //    "(kt|kl|omega)"     1e-5;
-    //}
+    residualControl
+    {
+        p               1e-5;
+        U               1e-6;
+        "(k|omega|gammaInt|ReThetat)" 1e-4;
+    }
 }
 
 relaxationFactors
 {
     fields
     {
-        p               0.3;
+        ".*"            1.0;
     }
     equations
     {
-        U               0.7;
-        "(k|omega|gamma)"     0.5;
+        ".*"            0.9;
     }
 }
 
-cache
-{
-    grad(U);
-}
 
 // ************************************************************************* //

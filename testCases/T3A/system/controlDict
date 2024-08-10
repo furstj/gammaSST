@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.6                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,14 +10,13 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
     object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 libs (
-  "libIncompressibleGammaSSTModel.so"
-  );
+    IncompressibleGammaSSTModel
+);
 
 application     simpleFoam;
 
@@ -33,7 +32,7 @@ deltaT          1;
 
 writeControl    timeStep;
 
-writeInterval   5000;
+writeInterval   500;
 
 purgeWrite      0;
 
@@ -41,19 +40,20 @@ writeFormat     ascii;
 
 writePrecision  12;
 
-writeCompression on;
+writeCompression off;
 
 timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable yes;
+runTimeModifiable true;
 
 functions
 {
-  #includeFunc wallShearStress
-  
-  #include "surfaces"
+    #includeFunc wallShearStress
+    #includeFunc wallShearStressGraph
+    #includeFunc kGraph
 }
+
 
 // ************************************************************************* //

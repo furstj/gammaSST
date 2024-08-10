@@ -354,7 +354,7 @@ gammaSST<BasicTurbulenceModel>::gammaSST
     (
         IOobject
         (
-            "gamma",
+            "gammaInt",
             this->runTime_.timeName(),
             this->mesh_,
             IOobject::MUST_READ,
