@@ -16,7 +16,7 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 libs (
-  "libmyIncompressibleTurbulenceModels.so"
+  "libmyIncompressibleGammaSSTModel.so"
   );
 
 application     simpleFoam;
