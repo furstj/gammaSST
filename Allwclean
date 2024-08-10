@@ -1,0 +1,10 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+#------------------------------------------------------------------------------
+
+wclean all incompressible
+wclean all compressible
+
+rm -f foamVersionThisIsCompiledFor
+
+#------------------------------------------------------------------------------
