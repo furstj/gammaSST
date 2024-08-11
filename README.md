@@ -4,6 +4,7 @@ A three-equation transition and turbulence model for OpenFOAM proposed by [Mente
 The model is based on the intermittency transport equation with empirical correlations for the transition onset and the intermittency production terms. The main difference with the original four-equation $\gamma-Re_\theta$ model is the equation for $Re_\theta$ is avoided.
 
 The model reads as follows:
+$$
 \begin{align*}
 \frac{\partial (\rho k)}{\partial t} + \frac{\partial (\rho U_j k)}{\partial x_j} &= \gamma P_k + P_k^{lim} - 
 \tilde{D}_k + 
@@ -16,6 +17,7 @@ D_\omega + Cd_\omega +
 \frac{\partial (\rho \gamma)}{\partial t} + \frac{\partial (\rho U_j \gamma)}{\partial x_j} &= P_\gamma - E_\gamma +
 \frac{\partial}{\partial x_j} \left[ \left( \mu + \frac{\mu_t}{\sigma_\gamma} \right) \frac{\partial \gamma}{\partial x_j} \right].
 \end{align*}
+$$
 
 For details on the model, please refer to the original publication by [Menter, Smirnov, et al.](#Menter2015).
 
@@ -33,7 +35,6 @@ Boundary conditions for intermittency $\gamma$ are zero normal flux (i.e. *zeroG
 3. Add the following line to the *controlDict* of your case:
 
     libs ( "libIncompressibleGammaSSTModel.so" ) ;
-    
 
   or
 
