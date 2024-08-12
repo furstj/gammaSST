@@ -11,6 +11,7 @@ fields  (wallShearStress);
 setConfig
 {
     axis x;
+    type midPoint;
 }
 
 // Must be last entry

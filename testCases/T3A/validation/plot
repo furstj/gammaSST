@@ -8,7 +8,6 @@ plot()
     set terminal pngcairo font "helvetica,20" size 1000, 1000
     set encoding utf8
     set termoption dash
-    set style increment user
     set style line 1 lt 1 linecolor rgb "blue"  linewidth 1.5
     set style line 11 lt 2 linecolor rgb "black" linewidth 1.5
 

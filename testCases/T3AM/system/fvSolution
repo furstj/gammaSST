@@ -19,11 +19,10 @@ solvers
     p
     {
         solver          GAMG;
-        tolerance       1e-6;
-        relTol          0.1;
+        tolerance       1e-8;
+        relTol          0.01;
         smoother        GaussSeidel;
     }
-
     "(U|k|omega|gammaInt|ReThetat)"
     {
         solver          smoothSolver;
@@ -31,6 +30,7 @@ solvers
         tolerance       1e-8;
         relTol          0.1;
         maxIter         10;
+        minIter         1;
     }
 }
 
@@ -41,7 +41,7 @@ SIMPLE
     residualControl
     {
         p               1e-5;
-        U               1e-6;
+        U               1e-5;
         "(k|omega|gammaInt|ReThetat)" 1e-4;
     }
 }
@@ -54,7 +54,7 @@ relaxationFactors
     }
     equations
     {
-        ".*"            0.9;
+        ".*"            0.95;
     }
 }
 

@@ -11,6 +11,16 @@ The boundary conditions were set up according to Menters, Smirnov et al.
 - Turbulence intensity at the inlet (i.e. $0.04 m$ before the plate) $I = 6.2\\%$
 - Turbulent/laminar viscosity ratio at the inlet $\nu_t/\nu = 90$.
 
+## Simulation
+The mesh density can be selected by using a command line argument to `Allrun`,
+so
+- `./Allrun coarse` or `./Allrun` runs the simulation using a mesh with $26 820$
+  cells, average $y^+ = 0.86$
+- `./Allrun medium` or `./Allrun` runs the simulation using a mesh with $107 280$
+  cells, average $y^+ = 0.44$
+- `./Allrun fine` or `./Allrun` runs the simulation using a mesh with $429 120$
+  cells, average $y^+ = 0.22$
+
 ## Expected results
 
 ![Friction coefficient at the wall](./validation/figures/Rex_vs_cf.png)

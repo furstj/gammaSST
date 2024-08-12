@@ -3,9 +3,15 @@ cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
 
+if [ -z "$1" ] || [ "$1" = "coarse" ]; then
+    dict=blockMeshDict
+else
+    dict=blockMeshDict."$1"
+fi
+
 restore0Dir
 
-runApplication blockMesh
+runApplication blockMesh -dict system/$dict
 
 runApplication $(getApplication)
 
