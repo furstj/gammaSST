@@ -144,7 +144,7 @@ protected:
     // Protected member functions
 
     // Model functions of gammaSST model
-    tmp<volScalarField> F1(const volScalarField& CDkOmega) const;	
+    virtual tmp<volScalarField> F1(const volScalarField& CDkOmega) const;
     tmp<volScalarField> ReThetac() const;
     tmp<volScalarField> Fonset(const volScalarField& S) const;
     tmp<volScalarField> Fonset1(const volScalarField& S) const;
