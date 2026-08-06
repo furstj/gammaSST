@@ -70,7 +70,8 @@ Description
             CTU1          100.0;
             CTU2         1000.0;
             CTU3            1.0;
-            crossFlow        no;    // Use C1 correlation for cross-flow transition
+            crossFlow        no;    // Use C1 correlation for
+                                    // cross-flow transition
             CRSF            1.0;
         }
     @endverbatim
@@ -161,6 +162,16 @@ protected:
         const volScalarField& S2
     ) const;
 
+    virtual tmp<volScalarField::Internal> epsilonByk
+    (
+        const volScalarField& F1,
+        const volTensorField& gradU
+    ) const;
+
+    virtual tmp<fvScalarMatrix> kSource() const;
+
+    virtual tmp<fvScalarMatrix> omegaSource() const;
+
 
     tmp<volScalarField> ReThetac() const;
     tmp<volScalarField> Fonset(const volScalarField& S) const;
@@ -169,6 +180,8 @@ protected:
     tmp<volScalarField> Fturb() const;
     tmp<volScalarField> TuL() const;
     tmp<volScalarField> FPG() const;
+
+    void correctGammaInt();
 
 
 public:
@@ -210,7 +223,11 @@ public:
     {
         return tmp<volScalarField>
         (
-            new volScalarField("DgammaEff", (this->nut_ / sigmaGamma_) + this->nu())
+            new volScalarField
+            (
+                "DgammaEff",
+                (this->nut_ / sigmaGamma_) + this->nu()
+            )
         );
     }
 
