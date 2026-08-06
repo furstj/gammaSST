@@ -34,20 +34,51 @@ namespace RASModels
 {
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * * //
+
 template<class BasicTurbulenceModel>
 tmp<volScalarField> gammaSST<BasicTurbulenceModel>::F1(const volScalarField& CDkOmega) const
 {
-  return max(
-	     kOmegaSST<BasicTurbulenceModel>::F1(CDkOmega),
-	     exp(-sqr(pow4(this->y_*sqrt(this->k_)/(scalar(120)*this->nu()))))
-	     );
+    return max
+    (
+        kOmegaSST<BasicTurbulenceModel>::F1(CDkOmega),
+        exp(-sqr(pow4(this->y_*sqrt(this->k_) / (scalar(120)*this->nu()))))
+    );
 }
+
+
+template<class BasicTurbulenceModel>
+tmp<volScalarField::Internal> gammaSST<BasicTurbulenceModel>::Pk
+(
+    const volScalarField::Internal& G
+) const
+{
+    return gammaInt_*G;
+}
+
+
+template<class BasicEddyViscosityModel>
+tmp<volScalarField::Internal> gammaSST<BasicEddyViscosityModel>::GbyNu0
+(
+    const volTensorField& gradU,
+    const volScalarField& S2
+) const
+{
+    volScalarField W("Omega", sqrt(2*magSqr(skew(gradU))));
+
+    return tmp<volScalarField::Internal>::New
+    (
+        IOobject::scopedName(this->type(), "GbyNu"),
+        W * sqrt(S2)
+    );
+}
+
 
 template<class BasicTurbulenceModel>
 tmp<volScalarField> gammaSST<BasicTurbulenceModel>::ReThetac() const
 {
-  return CTU1_ + CTU2_*exp(-CTU3_*TuL()*FPG() );
+    return CTU1_ + CTU2_*exp(-CTU3_*TuL()*FPG());
 }
+
 
 template<class BasicTurbulenceModel>
 tmp<volScalarField> gammaSST<BasicTurbulenceModel>::Fonset(const volScalarField& S) const
@@ -55,7 +86,7 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::Fonset(const volScalarField&
     tmp<volScalarField> Fons(
         max
         (
-            min(Fonset1(S), 2.0) - max(1.0-pow3(Rt()/3.5),0.0),
+            min(Fonset1(S), 2.0) - max(1.0 - pow3(Rt()/3.5), 0.0),
             0.0
         )
     );
@@ -66,20 +97,20 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::Fonset(const volScalarField&
     }
 
     return tmp<volScalarField>
-	(
-	    new volScalarField
-     	    (
-                IOobject
-       	        (
-	            "Fonset",
-    	            this->runTime_.timeName(),
-	            this->mesh_,
-	            IOobject::NO_READ,
-	            IOobject::NO_WRITE
-	        ),
-                Fons
-   	    )
-	);
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                "Fonset",
+                this->runTime_.timeName(),
+                this->mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            Fons
+        )
+    );
 }
 
 template<class BasicTurbulenceModel>
@@ -93,18 +124,27 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::FonsetCF() const
 {
     tmp<volVectorField> w(fvc::curl(this->U_));
     const dimensionedScalar wMin("VSMALL", inv(dimTime), VSMALL);
-    tmp<volVectorField> ew( w() / max(mag(w()), wMin));
+    tmp<volVectorField> ew(w() / max(mag(w()), wMin));
 
     tmp<volVectorField> n(-fvc::grad(this->y_));
     tmp<volScalarField> Psi(mag(n() & fvc::grad(ew))*this->y_);
 
-    tmp<volScalarField> lambda (
-        min( 0.0477, max( 0.0,
-        -7.57e-3 * ( fvc::grad(this->U_ & n()) & n()) * sqr(this->y_) / this->nu() + 0.0174))
+    tmp<volScalarField> lambda
+    (
+        min
+        (
+            0.0477,
+            max
+            (
+                0.0,
+                -7.57e-3*(fvc::grad(this->U_ & n()) & n())*sqr(this->y_) / this->nu() + 0.0174
+            )
+        )
     );
 
-    tmp<volScalarField> gLambda (
-        min(2.3, max( 1.0, ((27864.0*lambda()-1962.0)*lambda()+54.3)*lambda() + 1.0))
+    tmp<volScalarField> gLambda
+    (
+        min(2.3, max(1.0, ((27864.0*lambda() - 1962.0)*lambda() + 54.3)*lambda() + 1.0))
     );
     lambda.clear();
 
@@ -113,24 +153,24 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::FonsetCF() const
     tmp<volScalarField> TC1(this->CRSF_/150.8*0.684/gLambda*Psi*Rev);
 
     return tmp<volScalarField>
-	(
-	    new volScalarField
-     	    (
-                IOobject
-       	        (
-	            "FonsetCF",
-    	            this->runTime_.timeName(),
-	            this->mesh_,
-	            IOobject::NO_READ,
-	            IOobject::NO_WRITE
-	        ),
-		min
-		(
-                    max(100.0*(TC1 - 1.0), 0.0),
-                    1.0
-		)
-   	    )
-	);
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                "FonsetCF",
+                this->runTime_.timeName(),
+                this->mesh_,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            min
+            (
+                max(100.0*(TC1 - 1.0), 0.0),
+                1.0
+            )
+        )
+    );
 }
 
 
@@ -143,7 +183,7 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::Fturb() const
 template<class BasicTurbulenceModel>
 tmp<volScalarField> gammaSST<BasicTurbulenceModel>::TuL() const
 {
-    return min(100 * sqrt(2.0/3.0*this->k_) / (this->omega_ * this->y_), 100.0);
+    return min(100*sqrt(2.0/3.0*this->k_) / (this->omega_*this->y_), 100.0);
 }
 
 template<class BasicTurbulenceModel>
@@ -152,20 +192,33 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::FPG() const
     volVectorField n(fvc::grad(this->y_));
     volScalarField lambdaThetaL
     (
-        min( 1.0, max( -1.0,
-        -7.57e-3 * ( fvc::grad(this->U_ & n) & n) * sqr(this->y_) / this->nu() + 0.0128))
+        min
+        (
+            1.0,
+            max
+            (
+                -1.0,
+                -7.57e-3*(fvc::grad(this->U_ & n) & n)*sqr(this->y_) / this->nu() + 0.0128
+            )
+        )
     );
 
     tmp<volScalarField> tFPG(new volScalarField("FPG", lambdaThetaL));
 
     volScalarField& FPG_ = tFPG.ref();
-    forAll(FPG_, i) {
-        if (lambdaThetaL[i]>=0)
+    forAll(FPG_, i)
+    {
+        if (lambdaThetaL[i] >= 0)
+        {
             FPG_[i] = min(1 + CPG1_.value()*lambdaThetaL[i], CPG1lim_.value());
+        }
         else
+        {
             FPG_[i] = min(1 + CPG2_.value()*lambdaThetaL[i] +
-            CPG3_.value()*min(lambdaThetaL[i]+0.0681,0),
-            CPG2lim_.value());
+                CPG3_.value()*min(lambdaThetaL[i] + 0.0681, 0),
+                CPG2lim_.value());
+        }
+
         FPG_[i] = max(FPG_[i], 0.0);
     }
 
@@ -175,33 +228,32 @@ tmp<volScalarField> gammaSST<BasicTurbulenceModel>::FPG() const
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 template<class BasicTurbulenceModel>
 gammaSST<BasicTurbulenceModel>::gammaSST
+(
+    const alphaField& alpha,
+    const rhoField& rho,
+    const volVectorField& U,
+    const surfaceScalarField& alphaRhoPhi,
+    const surfaceScalarField& phi,
+    const transportModel& transport,
+    const word& propertiesName,
+    const word& type
+)
+:
+    kOmegaSST<BasicTurbulenceModel>
+    (
+        alpha,
+        rho,
+        U,
+        alphaRhoPhi,
+        phi,
+        transport,
+        propertiesName,
+        type
+    ),
+    Flength_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
         (
-            const alphaField& alpha,
-            const rhoField& rho,
-            const volVectorField& U,
-            const surfaceScalarField& alphaRhoPhi,
-            const surfaceScalarField& phi,
-            const transportModel& transport,
-            const word& propertiesName,
-            const word& type
-        ):
-
-            kOmegaSST<BasicTurbulenceModel>
-            (
-                alpha,
-                rho,
-                U,
-                alphaRhoPhi,
-                phi,
-                transport,
-                propertiesName,
-                type
-            ),
-
-            Flength_
-            (
-               dimensioned<scalar>::lookupOrAddToDict
-              (
             "Flength",
             this->coeffDict_,
             100.0
@@ -333,7 +385,8 @@ gammaSST<BasicTurbulenceModel>::gammaSST
             1.
         )
     ),
-    crossFlow_(
+    crossFlow_
+    (
         Switch::lookupOrAddToDict
         (
             "crossFlow",
@@ -350,8 +403,6 @@ gammaSST<BasicTurbulenceModel>::gammaSST
             1.
         )
     ),
-
-
     gammaInt_
     (
         IOobject
@@ -362,7 +413,7 @@ gammaSST<BasicTurbulenceModel>::gammaSST
             IOobject::MUST_READ,
             IOobject::AUTO_WRITE
         ),
-	this->mesh_
+        this->mesh_
     )
 {
     if (type == typeName)
@@ -379,10 +430,10 @@ bool gammaSST<BasicTurbulenceModel>::read()
 {
     if (kOmegaSST<BasicTurbulenceModel>::read())
     {
-	Flength_.readIfPresent(this->coeffDict());
-	ca2_.readIfPresent(this->coeffDict());
-	ce2_.readIfPresent(this->coeffDict());
-	sigmaGamma_.readIfPresent(this->coeffDict());
+        Flength_.readIfPresent(this->coeffDict());
+        ca2_.readIfPresent(this->coeffDict());
+        ce2_.readIfPresent(this->coeffDict());
+        sigmaGamma_.readIfPresent(this->coeffDict());
         CPG1_.readIfPresent(this->coeffDict());
         CPG1lim_.readIfPresent(this->coeffDict());
         CPG2_.readIfPresent(this->coeffDict());
@@ -423,7 +474,6 @@ void gammaSST<BasicTurbulenceModel>::correct()
     volScalarField& k_ = this->k_;
     fv::options& fvOptions(fv::options::New(this->mesh_));
 
-
     eddyViscosity<RASModel<BasicTurbulenceModel> >::correct();
 
     volScalarField divU(fvc::div(fvc::absolute(this->phi(), U)));
@@ -433,22 +483,28 @@ void gammaSST<BasicTurbulenceModel>::correct()
     const volScalarField S("S", sqrt(S2));
     const volScalarField W("Omega", sqrt(2*magSqr(skew(tgradU()))));
 
-    volScalarField G(this->GName(), nut*S*W);
+    volScalarField::Internal GbyNu0(this->GbyNu0(tgradU(), S2));
+    volScalarField::Internal G(this->GName(), nut*GbyNu0);
+
     tgradU.clear();
 
     // Update omega and G at the wall
     omega_.boundaryFieldRef().updateCoeffs();
 
     const volScalarField CDkOmega
-        ( "CD",
-        (2*this->alphaOmega2_)*(fvc::grad(k_) & fvc::grad(omega_))/omega_
-        );
+    (
+        "CD",
+        (2*this->alphaOmega2_)*(fvc::grad(k_) & fvc::grad(omega_)) / omega_
+    );
 
     const volScalarField F1("F1", this->F1(CDkOmega));
+    const volScalarField F23(this->F23());
 
     {
         volScalarField::Internal gamma(this->gamma(F1));
         volScalarField::Internal beta(this->beta(F1));
+
+        GbyNu0 = this->GbyNu(GbyNu0, F23(), S2());
 
         // Turbulent frequency equation
         tmp<fvScalarMatrix> omegaEqn
@@ -457,15 +513,15 @@ void gammaSST<BasicTurbulenceModel>::correct()
           + fvm::div(alphaRhoPhi, omega_)
           - fvm::laplacian(alpha*rho*this->DomegaEff(F1), omega_)
          ==
-            alpha*rho*gamma*S*W
+            alpha*rho*gamma*GbyNu0
           - fvm::Sp(alpha*rho*beta*omega_, omega_)
           - fvm::SuSp
             (
-                alpha*rho*(F1 - scalar(1))*CDkOmega/omega_,
+                                alpha*rho*(F1 - scalar(1))*CDkOmega / omega_,
                 omega_
             )
-	  + alpha()*rho()*beta*sqr(this->omegaInf_)
-	  + this->omegaSource()
+                    + alpha()*rho()*beta*sqr(this->omegaInf_)
+                    + this->omegaSource()
           + fvOptions(alpha, rho, omega_)
         );
 
@@ -473,20 +529,21 @@ void gammaSST<BasicTurbulenceModel>::correct()
         fvOptions.constrain(omegaEqn.ref());
         omegaEqn.ref().boundaryManipulate(omega_.boundaryFieldRef());
         solve(omegaEqn);
-	fvOptions.correct(omega_);
+        fvOptions.correct(omega_);
         bound(omega_, this->omegaMin_);
     }
 
     // Turbulent kinetic energy equation
-    const volScalarField FonLim(
+    const volScalarField FonLim
+    (
         "FonLim",
-        min( max(sqr(this->y_)*S/this->nu() / (
-            2.2*ReThetacLim_) - 1., 0.), 3.)
+        min(max(sqr(this->y_)*S/this->nu() / (2.2*ReThetacLim_) - 1., 0.), 3.)
     );
-    const volScalarField PkLim(
+    const volScalarField PkLim
+    (
         "PkLim",
-        5*Ck_ * max(gammaInt()-0.2,0.) * (1-gammaInt()) * FonLim *
-        max(3*CSEP_*this->nu() - this->nut_, 0.*this->nut_) * S * W
+        5*Ck_*max(gammaInt() - 0.2, 0.)*(1 - gammaInt())*FonLim
+      * max(3*CSEP_*this->nu() - this->nut_, 0.*this->nut_)*S*W
     );
 
     tmp<fvScalarMatrix> kEqn
@@ -495,8 +552,8 @@ void gammaSST<BasicTurbulenceModel>::correct()
       + fvm::div(alphaRhoPhi, k_)
       - fvm::laplacian(alpha*rho*this->DkEff(F1), k_)
      ==
-        alpha*rho*(G*gammaInt() + PkLim)
-        - fvm::Sp(max(gammaInt(),scalar(0.1)) * alpha*rho*this->betaStar_*omega_, k_)
+        alpha*rho*(Pk(G) + PkLim)
+    - fvm::Sp(max(gammaInt(), scalar(0.1))*alpha*rho*this->betaStar_*omega_, k_)
       + alpha()*rho()*this->betaStar_*this->omegaInf_*this->kInf_
       + this->kSource()
       + fvOptions(alpha, rho, k_)
@@ -514,32 +571,33 @@ void gammaSST<BasicTurbulenceModel>::correct()
     this->correctNut(S2, this->F23());
 #endif
 
-   // Intermittency equation (2)
-    volScalarField Pgamma1(Flength_ * S * gammaInt_ * Fonset(S));
-    volScalarField Pgamma2(ca2_ * W * gammaInt_ * Fturb());
+    // Intermittency equation (2)
+    volScalarField Pgamma1(Flength_*S*gammaInt_*Fonset(S));
+    volScalarField Pgamma2(ca2_*W*gammaInt_*Fturb());
     tmp<fvScalarMatrix> gammaEqn
         (
             fvm::ddt(alpha, rho, gammaInt_)
             + fvm::div(alphaRhoPhi, gammaInt_)
             - fvm::laplacian(alpha*rho*this->DgammaEff(), gammaInt_)
             ==
-            alpha*rho*Pgamma1 - fvm::Sp(alpha*rho*Pgamma1, gammaInt_) +
-            alpha*rho*Pgamma2 - fvm::Sp(alpha*rho*ce2_*Pgamma2, gammaInt_)
+                        alpha*rho*Pgamma1 - fvm::Sp(alpha*rho*Pgamma1, gammaInt_)
+                    + alpha*rho*Pgamma2 - fvm::Sp(alpha*rho*ce2_*Pgamma2, gammaInt_)
         );
 
     gammaEqn.ref().relax();
     solve(gammaEqn);
 
-    bound(gammaInt_,scalar(0));
+    bound(gammaInt_, scalar(0));
 
-    if (debug && this->runTime_.outputTime()) {
+    if (debug && this->runTime_.outputTime())
+    {
         S.write();
         W.write();
         F1.write();
         CDkOmega.write();
-        const volScalarField Pgamma("Pgamma", Pgamma1*(scalar(1)-gammaInt_));
+        const volScalarField Pgamma("Pgamma", Pgamma1*(scalar(1) - gammaInt_));
         Pgamma.write();
-        const volScalarField Egamma("Egamma", Pgamma2*(scalar(1)-ce2_*gammaInt_));
+        const volScalarField Egamma("Egamma", Pgamma2*(scalar(1) - ce2_*gammaInt_));
         Egamma.write();
         FonLim.write();
         PkLim.write();

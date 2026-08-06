@@ -30,9 +30,9 @@ Description
     logies.
 
     \verbatim
-        MENTER, Florian R., Pavel E. SMIRNOV, Tao LIU a Ravikanth AVANCHA. 
-        A one-equation local correlation-based transition model. 
-        Flow, Turbulence and Combustion. 2015, 95(4), 583–619. ISSN 1386-6184. 
+        MENTER, Florian R., Pavel E. SMIRNOV, Tao LIU a Ravikanth AVANCHA.
+        A one-equation local correlation-based transition model.
+        Flow, Turbulence and Combustion. 2015, 95(4), 583–619. ISSN 1386-6184.
         doi:10.1007/s10494-015-9622-4
     \endverbatim
 
@@ -57,11 +57,11 @@ Description
             b1          1.0;
             c1          10.0;
             F3          no;
-   
+
             Flength       100;
             ca2             0.06;
             ce2             50;
-	    sigmaGamma      1;
+            sigmaGamma      1;
             CPG1            14.68;
             CPG1lim          1.5;
             CPG2            -7.34;
@@ -107,18 +107,20 @@ class gammaSST
     public kOmegaSST<BasicTurbulenceModel>
 {
     // Private Member Functions
-    
-    // Disallow default bitwise copy construct and assignment
-    gammaSST(const gammaSST&);
-    gammaSST& operator=(const gammaSST&);
-    
+
+    //- No copy construct
+    gammaSST(const gammaSST&) = delete;
+
+    //- No copy assignment
+    gammaSST& operator=(const gammaSST&) = delete;
+
 protected:
     // Protected data
-        
+
     // Model coefficients
-    
+
     dimensionedScalar Flength_;
-    
+
     dimensionedScalar ca2_;
     dimensionedScalar ce2_;
     dimensionedScalar sigmaGamma_;
@@ -136,7 +138,7 @@ protected:
 
     Switch crossFlow_;
     dimensionedScalar CRSF_;
-    
+
     // Fields
     volScalarField gammaInt_;
 
@@ -145,6 +147,21 @@ protected:
 
     // Model functions of gammaSST model
     virtual tmp<volScalarField> F1(const volScalarField& CDkOmega) const;
+
+    //- Return k production rate
+    virtual tmp<volScalarField::Internal> Pk
+    (
+        const volScalarField::Internal& G
+    ) const;
+
+    //- Return (G/nu)_0
+    virtual tmp<volScalarField::Internal> GbyNu0
+    (
+        const volTensorField& gradU,
+        const volScalarField& S2
+    ) const;
+
+
     tmp<volScalarField> ReThetac() const;
     tmp<volScalarField> Fonset(const volScalarField& S) const;
     tmp<volScalarField> Fonset1(const volScalarField& S) const;
@@ -153,7 +170,7 @@ protected:
     tmp<volScalarField> TuL() const;
     tmp<volScalarField> FPG() const;
 
-    
+
 public:
 
     typedef typename BasicTurbulenceModel::alphaField alphaField;
@@ -166,53 +183,53 @@ public:
 
     // Constructors
 
-        //- Construct from components
-        gammaSST
-        (            
-            const alphaField& alpha,
-            const rhoField& rho,
-            const volVectorField& U,
-            const surfaceScalarField& alphaRhoPhi,
-            const surfaceScalarField& phi,
-            const transportModel& transport,
-            const word& propertiesName  = turbulenceModel::propertiesName,
-            const word& type = typeName
-        );
+    //- Construct from components
+    gammaSST
+    (
+        const alphaField& alpha,
+        const rhoField& rho,
+        const volVectorField& U,
+        const surfaceScalarField& alphaRhoPhi,
+        const surfaceScalarField& phi,
+        const transportModel& transport,
+        const word& propertiesName = turbulenceModel::propertiesName,
+        const word& type = typeName
+    );
 
 
     //- Destructor
     virtual ~gammaSST()
-        {}
-    
-    
+    {}
+
+
     // Member Functions
 
-    
+
     //- Return the effective diffusivity for gamma
     tmp<volScalarField> DgammaEff() const
-        {
-            return tmp<volScalarField>
-                (
-                    new volScalarField("DgammaEff", (this->nut_/sigmaGamma_) + this->nu())
-                );
-        }
-    
+    {
+        return tmp<volScalarField>
+        (
+            new volScalarField("DgammaEff", (this->nut_ / sigmaGamma_) + this->nu())
+        );
+    }
+
     //- Return the intermittency
     virtual tmp<volScalarField> gammaInt() const
-        {
-            return gammaInt_;
-        }
-    
+    {
+        return gammaInt_;
+    }
+
     virtual tmp<volScalarField> Rt() const
-        {
-            return tmp<volScalarField>
-                (
-                    new volScalarField("Rt", this->k_/(this->nu()*this->omega_)) 
-                    // LANGTRY's definition
-                );
-        }
-    
-    
+    {
+        return tmp<volScalarField>
+        (
+            new volScalarField("Rt", this->k_ / (this->nu()*this->omega_))
+            // LANGTRY's definition
+        );
+    }
+
+
     //- Solve the turbulence equations and correct the turbulence viscosity
     virtual void correct();
 
